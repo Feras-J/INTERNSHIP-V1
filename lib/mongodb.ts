@@ -1,10 +1,5 @@
 import { MongoClient } from "mongodb";
 
-declare global {
-  // allow global "_mongoClientPromise" property
-  var _mongoClientPromise: any;
-}
-
 if (!process.env.MONGODB_URI) {
   throw new Error('Invalid/Missing environment variable: "MONGODB_URI"')
 }

@@ -8,9 +8,7 @@ import { Label } from "@/components/ui/label"
 import { Textarea } from "@/components/ui/textarea"
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
 import type { Task } from "@/lib/types"
-import { useForm } from "react-hook-form"
 import { TaskStatus } from "@/lib/types"
-import { set } from "mongoose"
 
 interface EditTaskDialogProps {
   task: Task | null
@@ -33,15 +31,6 @@ export function EditTaskDialog({ task, open, onOpenChange, onUpdate }: EditTaskD
       setStatus(task.status)
     }
   }, [task])
-
-  const form = useForm<Task>({
-    defaultValues: task || {
-      title: "",
-      description: "",
-      email: "",
-      status: TaskStatus.TODO,
-    },
-  })
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault()
