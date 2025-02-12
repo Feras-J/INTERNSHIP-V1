@@ -17,7 +17,7 @@ export default async function Home() {
   
   try {
     const client = await MongoClient.connect(process.env.MONGODB_URI as string)
-    const db = client.db('your_database_name')
+    const db = client.db('cluster0.toh0y.mongodb.net')
     const documents = await db.collection('tasks').find({}).toArray()
     tasks = documents.map(doc => ({
       _id: doc._id.toString(),
