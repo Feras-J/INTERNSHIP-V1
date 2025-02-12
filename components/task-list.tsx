@@ -29,8 +29,8 @@ export function TaskList() {
   }
 
   const addTask = async (task: CreateTaskInput) => {
-    // Generate a unique id for the new task.
-    const taskWithId = { ...task, id: uuidv4() }
+    // Generate a unique id and createdAt for the new task.
+    const taskWithId = { ...task, id: uuidv4(), createdAt: new Date() }
     await api.createTask(taskWithId)
     fetchTasks()
     setIsDialogOpen(false)

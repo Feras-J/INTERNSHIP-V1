@@ -11,13 +11,13 @@ interface Task {
   status: string
 }
 
-// For Next.js 14 App Router, use a async Server Component
 export default async function Home() {
   let tasks: Task[] = []
   
   try {
+    // Use the correct database name, not the connection URL
     const client = await MongoClient.connect(process.env.MONGODB_URI as string)
-    const db = client.db('cluster0.toh0y.mongodb.net')
+    const db = client.db('mongodb+srv://feras:FJ123@cluster0.toh0y.mongodb.net/?retryWrites=true&w=majority&appName=Cluster0') // Replace with your actual database name
     const documents = await db.collection('tasks').find({}).toArray()
     tasks = documents.map(doc => ({
       _id: doc._id.toString(),
@@ -37,7 +37,7 @@ export default async function Home() {
     <main className="min-h-screen bg-background">
       <div className="container mx-auto px-4 py-8">
         <SearchBar tasks={tasks} />
-        <TaskList  />
+        <TaskList /> {/* Pass tasks as a prop */}
       </div>
     </main>
   )

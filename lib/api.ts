@@ -1,31 +1,38 @@
-import type { Task } from "./types"
+import type { Task } from './types'
+
+const BASE_URL = '/api'
 
 export const api = {
-  getTasks: async (): Promise<Task[]> => {
-    const response = await fetch("/api/tasks")
-    return response.json()
+  async getTasks(): Promise<Task[]> {
+    const res = await fetch(`${BASE_URL}/tasks`)
+    if (!res.ok) throw new Error('Failed to fetch tasks')
+    return res.json()
   },
 
-  createTask: async (task: Omit<Task, "_id" | "createdAt">): Promise<Task> => {
-    const response = await fetch("/api/tasks", {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
+  async createTask(task: Omit<Task, '_id'>): Promise<Task> {
+    const res = await fetch(`${BASE_URL}/tasks`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify(task),
     })
-    return response.json()
+    if (!res.ok) throw new Error('Failed to create task')
+    return res.json()
   },
 
-  updateTask: async (task: Task): Promise<Task> => {
-    const response = await fetch("/api/tasks", {
-      method: "PUT",
-      headers: { "Content-Type": "application/json" },
+  async updateTask(task: Task): Promise<Task> {
+    const res = await fetch(`${BASE_URL}/tasks/${task.id}`, {
+      method: 'PUT',
+      headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify(task),
     })
-    return response.json()
+    if (!res.ok) throw new Error('Failed to update task')
+    return res.json()
   },
 
-  deleteTask: async (id: string): Promise<void> => {
-    await fetch(`/api/tasks?id=${id}`, { method: "DELETE" })
-  },
+  async deleteTask(id: string): Promise<void> {
+    const res = await fetch(`${BASE_URL}/tasks/${id}`, {
+      method: 'DELETE',
+    })
+    if (!res.ok) throw new Error('Failed to delete task')
+  }
 }
-
