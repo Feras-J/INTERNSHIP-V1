@@ -1,0 +1,6 @@
+module.exports = {
+	// ...existing config...
+	trailingSlash: true,
+	output: 'export',
+	// ...other config if needed...
+}
