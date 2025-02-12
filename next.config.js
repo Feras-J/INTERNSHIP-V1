@@ -1,6 +1,10 @@
-module.exports = {
-	// ...existing config...
-	trailingSlash: true,
+/** @type {import('next').NextConfig} */
+const nextConfig = {
 	output: 'export',
-	// ...other config if needed...
-}
+	images: {
+	  unoptimized: true,
+	},
+	basePath: '/INTERNSHIP-V1'
+  }
+  
+  module.exports = nextConfig

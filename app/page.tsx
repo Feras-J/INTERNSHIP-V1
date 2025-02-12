@@ -2,7 +2,6 @@ import { TaskList } from "@/components/task-list"
 import { SearchBar } from "@/components/search-bar"
 import { MongoClient } from 'mongodb'
 
-// Define the Task interface
 interface Task {
   _id: string
   title: string
@@ -12,11 +11,11 @@ interface Task {
   status: string
 }
 
-// Add static generation
-export async function generateStaticProps() {
+// For Next.js 14 App Router, use a async Server Component
+export default async function Home() {
   let tasks: Task[] = []
+  
   try {
-    // Connect to MongoDB during build time
     const client = await MongoClient.connect(process.env.MONGODB_URI as string)
     const db = client.db('your_database_name')
     const documents = await db.collection('tasks').find({}).toArray()
@@ -30,18 +29,15 @@ export async function generateStaticProps() {
     }))
     await client.close()
   } catch (err) {
-    console.error("Failed to fetch tasks during build:", err)
+    console.error("Failed to fetch tasks:", err)
     tasks = []
   }
-  return { props: { tasks } }
-}
 
-export default function Home({ tasks }: { tasks: Task[] }) {
   return (
     <main className="min-h-screen bg-background">
       <div className="container mx-auto px-4 py-8">
         <SearchBar tasks={tasks} />
-        <TaskList />
+        <TaskList  />
       </div>
     </main>
   )
