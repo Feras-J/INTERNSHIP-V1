@@ -1,10 +1,10 @@
 /** @type {import('next').NextConfig} */
 const nextConfig = {
-	output: 'export',
+	reactStrictMode: true,
+	swcMinify: true,
 	images: {
 	  unoptimized: true,
 	},
-	basePath: '/INTERNSHIP-V1'
-  }
-  
-  module.exports = nextConfig
+}
+
+module.exports = nextConfig

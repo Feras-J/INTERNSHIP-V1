@@ -7,8 +7,13 @@ export default async function Home() {
   let tasks: Task[] = []
   
   try {
-    // Fetch from your API route instead of direct DB connection
-    const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/tasks`, {
+    // For Vercel deployment
+    const protocol = process.env.VERCEL_URL ? 'https' : 'http'
+    const baseUrl = process.env.VERCEL_URL 
+      ? `${protocol}://${process.env.VERCEL_URL}`
+      : process.env.NEXT_PUBLIC_API_URL
+
+    const response = await fetch(`${baseUrl}/api/tasks`, {
       cache: 'no-store'
     })
     
@@ -26,7 +31,7 @@ export default async function Home() {
     <main className="min-h-screen bg-background">
       <div className="container mx-auto px-4 py-8">
         <SearchBar tasks={tasks} />
-        <TaskList initialTasks={tasks} />
+        <TaskList />
       </div>
     </main>
   )
