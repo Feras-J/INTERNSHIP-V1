@@ -13,12 +13,21 @@ export default async function Home() {
       ? `${protocol}://${process.env.VERCEL_URL}`
       : process.env.NEXT_PUBLIC_API_URL
 
+    const controller = new AbortController()
+    const timeoutId = setTimeout(() => controller.abort(), 30000) // 30 second timeout
+
     const response = await fetch(`${baseUrl}/api/tasks`, {
-      cache: 'no-store'
+      cache: 'no-store',
+      signal: controller.signal,
+      headers: {
+        'Content-Type': 'application/json',
+      },
     })
     
+    clearTimeout(timeoutId)
+
     if (!response.ok) {
-      throw new Error('Failed to fetch tasks')
+      throw new Error(`Failed to fetch tasks: ${response.status}`)
     }
     
     tasks = await response.json()

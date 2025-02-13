@@ -7,14 +7,14 @@ import { ObjectId } from "mongodb"
 export async function GET() {
   try {
     const client = await clientPromise
-    const db = client.db("taskdb")
-    const tasks = await db.collection('tasks').find({}).toArray()
+    const db = client.db("tasks")
+    const tasks = await db.collection("tasks").find({}).toArray()
     
     return NextResponse.json(tasks, { status: 200 })
-  } catch (err) {
-    console.error('Failed to fetch tasks:', err)
+  } catch (error) {
+    console.error('Failed to fetch tasks:', error)
     return NextResponse.json(
-      { message: 'Failed to fetch tasks' }, 
+      { error: 'Failed to fetch tasks' },
       { status: 500 }
     )
   }
