@@ -15,9 +15,13 @@ interface CreateTaskInput extends Omit<Task, "id" | "createdAt" | "_id"> {
   status: TaskStatus;
 }
 
-export function TaskList() {
+interface TaskListProps {
+  initialTasks?: Task[]
+}
+
+export function TaskList({ initialTasks = [] }: TaskListProps) {
   const [isDialogOpen, setIsDialogOpen] = useState(false)
-  const [tasks, setTasks] = useState<Task[]>([])
+  const [tasks, setTasks] = useState(initialTasks)
 
   useEffect(() => {
     fetchTasks()

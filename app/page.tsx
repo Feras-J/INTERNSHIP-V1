@@ -1,17 +1,8 @@
-'use client';
-
 import { TaskList } from "@/components/task-list"
 import { SearchBar } from "@/components/search-bar"
+import type { Task } from "@/lib/types"
 
-interface Task {
-  id: string
-  title: string
-  completed: boolean
-  description: string
-  email: string
-  status: string
-}
-
+// This can be async since it's a server component
 export default async function Home() {
   let tasks: Task[] = []
   
@@ -35,7 +26,7 @@ export default async function Home() {
     <main className="min-h-screen bg-background">
       <div className="container mx-auto px-4 py-8">
         <SearchBar tasks={tasks} />
-        <TaskList /> {/* Added tasks prop */}
+        <TaskList initialTasks={tasks} />
       </div>
     </main>
   )
