@@ -1,3 +1,5 @@
+'use client';
+
 import { TaskList } from "@/components/task-list"
 import { SearchBar } from "@/components/search-bar"
 

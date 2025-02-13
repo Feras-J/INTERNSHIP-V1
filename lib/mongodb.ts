@@ -28,4 +28,14 @@ if (process.env.NODE_ENV === 'development') {
   clientPromise = client.connect()
 }
 
+// Immediately invoked async function to handle connection
+(async () => {
+  try {
+    await clientPromise;
+    console.log('Connected to MongoDB');
+  } catch (error) {
+    console.error('Failed to connect to MongoDB:', error);
+  }
+})();
+
 export default clientPromise
