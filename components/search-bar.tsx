@@ -11,13 +11,7 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table"
-
-// Define Task type
-interface Task {
-  title: string
-  description: string
-  status: string
-}
+import type { Task } from "@/lib/types"
 
 const Loader = () => <div className="animate-spin rounded-full h-4 w-4 border-t-2 border-white" />
 
@@ -46,17 +40,38 @@ const SubmitButton = React.forwardRef<HTMLButtonElement, React.ButtonHTMLAttribu
 SubmitButton.displayName = "SubmitButton"
 
 interface SearchBarProps {
-  tasks?: Task[]
+  initialTasks?: Task[]
 }
 
-export const SearchBar: React.FC<SearchBarProps> = ({ tasks = [] }) => {
+export const SearchBar: React.FC<SearchBarProps> = ({ initialTasks = [] }) => {
   const [searchQuery, setSearchQuery] = useState("")
   const [searchResults, setSearchResults] = useState<Task[]>([])
   const [hasSearched, setHasSearched] = useState(false)
+  const [tasks, setTasks] = useState<Task[]>(initialTasks)
 
   useEffect(() => {
-    console.log("SearchBar mounted. tasks received:", tasks) // Debug log on mount
-  }, [tasks])
+    const fetchTasks = async () => {
+      try {
+        const response = await fetch('/api/tasks', {
+          headers: {
+            'Content-Type': 'application/json',
+          },
+        })
+        if (!response.ok) throw new Error('Failed to fetch tasks')
+        const data = await response.json()
+        console.log("Fetched tasks in SearchBar:", data)
+        setTasks(data)
+      } catch (error) {
+        console.error('Error fetching tasks:', error)
+      }
+    }
+
+    fetchTasks()
+  }, [])
+
+  useEffect(() => {
+    setTasks(initialTasks)
+  }, [initialTasks])
 
   const handleSearch = (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault()
@@ -64,25 +79,20 @@ export const SearchBar: React.FC<SearchBarProps> = ({ tasks = [] }) => {
 
     const query = searchQuery.trim().toLowerCase()
     console.log("Search query:", query)
-    console.log("Tasks array:", tasks)
+    console.log("Available tasks for search:", tasks)
 
     if (!query) {
       setSearchResults([])
       return
     }
 
-    const results = tasks
-      .filter(task =>
-        task.title.toLowerCase().includes(query) ||
-        task.description.toLowerCase().includes(query)
-      )
-      .sort((a, b) => {
-        const aStarts = a.title.toLowerCase().startsWith(query) ? 0 : 1
-        const bStarts = b.title.toLowerCase().startsWith(query) ? 0 : 1
-        return aStarts - bStarts
-      })
+    const results = tasks.filter(task => {
+      const titleMatch = task.title?.toLowerCase().includes(query) || false
+      const descMatch = task.description?.toLowerCase().includes(query) || false
+      return titleMatch || descMatch
+    })
 
-    console.log("Filtered results:", results)
+    console.log("Search results:", results)
     setSearchResults(results)
   }
 
@@ -106,14 +116,16 @@ export const SearchBar: React.FC<SearchBarProps> = ({ tasks = [] }) => {
                 <TableHead>Title</TableHead>
                 <TableHead>Description</TableHead>
                 <TableHead>Status</TableHead>
+                <TableHead>Email</TableHead>
               </TableRow>
             </TableHeader>
             <TableBody>
               {searchResults.map((task, index) => (
-                <TableRow key={index}>
+                <TableRow key={task._id || index}>
                   <TableCell>{task.title}</TableCell>
                   <TableCell>{task.description}</TableCell>
                   <TableCell>{task.status}</TableCell>
+                  <TableCell>{task.email}</TableCell>
                 </TableRow>
               ))}
             </TableBody>

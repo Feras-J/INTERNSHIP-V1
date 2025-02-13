@@ -8,9 +8,18 @@ export async function GET() {
   try {
     const client = await clientPromise
     const db = client.db("taskdb")
+    
+    console.log('Connected to MongoDB, fetching tasks...') // Debug connection
+    
     const tasks = await db.collection("tasks").find({}).toArray()
     
-    console.log('Fetched tasks:', tasks)
+    console.log('Tasks fetched from MongoDB:', tasks.length) // Debug count
+    
+    if (!tasks) {
+      console.log('No tasks found in database')
+      return NextResponse.json([], { status: 200 })
+    }
+    
     return NextResponse.json(tasks, { status: 200 })
   } catch (error) {
     console.error('Failed to fetch tasks:', error)

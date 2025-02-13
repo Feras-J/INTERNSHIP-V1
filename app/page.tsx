@@ -11,10 +11,12 @@ export default async function Home() {
     const protocol = process.env.VERCEL_URL ? 'https' : 'http'
     const baseUrl = process.env.VERCEL_URL 
       ? `${protocol}://${process.env.VERCEL_URL}`
-      : process.env.NEXT_PUBLIC_API_URL
+      : process.env.NEXT_PUBLIC_API_URL || 'http://localhost:3000'
+
+    console.log('Fetching tasks from:', `${baseUrl}/api/tasks`) // Debug URL
 
     const controller = new AbortController()
-    const timeoutId = setTimeout(() => controller.abort(), 30000) // 30 second timeout
+    const timeoutId = setTimeout(() => controller.abort(), 5000) // 5 second timeout
 
     const response = await fetch(`${baseUrl}/api/tasks`, {
       cache: 'no-store',
@@ -27,10 +29,19 @@ export default async function Home() {
     clearTimeout(timeoutId)
 
     if (!response.ok) {
-      throw new Error(`Failed to fetch tasks: ${response.status}`)
+      console.error('Failed to fetch tasks:', response.status, response.statusText)
+      throw new Error(`Failed to fetch tasks: ${response.status} ${response.statusText}`)
     }
     
-    tasks = await response.json()
+    const data = await response.json()
+    
+    if (!Array.isArray(data)) {
+      console.error('Invalid response format:', data)
+      throw new Error('Invalid response format')
+    }
+    
+    tasks = data
+    console.log('Successfully fetched tasks:', tasks.length) // Debug task count
   } catch (err) {
     console.error("Failed to fetch tasks:", err)
     tasks = []
@@ -39,8 +50,8 @@ export default async function Home() {
   return (
     <main className="min-h-screen bg-background">
       <div className="container mx-auto px-4 py-8">
-        <SearchBar tasks={tasks} />
-        <TaskList />
+        <SearchBar initialTasks={tasks} />
+        <TaskList initialTasks={tasks} />
       </div>
     </main>
   )
