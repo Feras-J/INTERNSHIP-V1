@@ -6,12 +6,11 @@ import { MongoClient } from 'mongodb'
 
 export async function GET() {
   try {
-    const client = await MongoClient.connect(process.env.MONGODB_URI as string)
-    const db = client.db('taskdb') // Changed to match your database name
+    const client = await clientPromise
+    const db = client.db("taskdb")
     const tasks = await db.collection('tasks').find({}).toArray()
-    await client.close()
     
-    return NextResponse.json(tasks)
+    return NextResponse.json(tasks, { status: 200 })
   } catch (err) {
     console.error('Failed to fetch tasks:', err)
     return NextResponse.json(
