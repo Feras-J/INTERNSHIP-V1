@@ -1,9 +1,8 @@
 import { TaskList } from "@/components/task-list"
 import { SearchBar } from "@/components/search-bar"
-import { MongoClient } from 'mongodb'
 
 interface Task {
-  _id: string
+  id: string
   title: string
   completed: boolean
   description: string
@@ -15,19 +14,16 @@ export default async function Home() {
   let tasks: Task[] = []
   
   try {
-    // Use the correct database name, not the connection URL
-    const client = await MongoClient.connect(process.env.MONGODB_URI as string)
-    const db = client.db('mongodb+srv://feras:FJ123@cluster0.toh0y.mongodb.net/?retryWrites=true&w=majority&appName=Cluster0') // Replace with your actual database name
-    const documents = await db.collection('tasks').find({}).toArray()
-    tasks = documents.map(doc => ({
-      _id: doc._id.toString(),
-      title: doc.title as string,
-      completed: doc.completed as boolean,
-      description: doc.description as string,
-      email: doc.email as string,
-      status: doc.status as string
-    }))
-    await client.close()
+    // Fetch from your API route instead of direct DB connection
+    const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/tasks`, {
+      cache: 'no-store'
+    })
+    
+    if (!response.ok) {
+      throw new Error('Failed to fetch tasks')
+    }
+    
+    tasks = await response.json()
   } catch (err) {
     console.error("Failed to fetch tasks:", err)
     tasks = []
@@ -37,7 +33,7 @@ export default async function Home() {
     <main className="min-h-screen bg-background">
       <div className="container mx-auto px-4 py-8">
         <SearchBar tasks={tasks} />
-        <TaskList /> {/* Pass tasks as a prop */}
+        <TaskList /> {/* Added tasks prop */}
       </div>
     </main>
   )
