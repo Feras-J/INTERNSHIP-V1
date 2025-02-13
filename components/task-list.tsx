@@ -24,42 +24,54 @@ export function TaskList({ initialTasks = [] }: TaskListProps) {
   const [tasks, setTasks] = useState(initialTasks)
 
   useEffect(() => {
-    fetchTasks()
+    const loadTasks = async () => {
+      try {
+        const fetchedTasks = await api.getTasks()
+        console.log('Fetched tasks in component:', fetchedTasks)
+        setTasks(fetchedTasks)
+      } catch (error) {
+        console.error('Error fetching tasks:', error)
+      }
+    }
+    
+    loadTasks()
   }, [])
-
-  const fetchTasks = async () => {
-    const fetchedTasks = await api.getTasks()
-    setTasks(fetchedTasks)
-  }
 
   const addTask = async (task: CreateTaskInput) => {
     // Generate a unique id and createdAt for the new task.
     const taskWithId = { ...task, id: uuidv4(), createdAt: new Date() }
     await api.createTask(taskWithId)
-    fetchTasks()
+    const fetchedTasks = await api.getTasks()
+    setTasks(fetchedTasks)
     setIsDialogOpen(false)
   }
 
   const deleteTask = async (id: string) => {
     await api.deleteTask(id)
-    fetchTasks()
+    const fetchedTasks = await api.getTasks()
+    setTasks(fetchedTasks)
   }
 
   const updateTask = async (task: Task) => {
     await api.updateTask(task)
-    fetchTasks()
+    const fetchedTasks = await api.getTasks()
+    setTasks(fetchedTasks)
   }
 
   return (
     <div className="space-y-4">
       <div className="flex justify-between items-center">
-        <h1 className="text-2xl font-semibold tracking-tight">Tasks</h1>
+        <h1 className="text-2xl font-semibold tracking-tight">Tasks ({tasks.length})</h1>
         <Button onClick={() => setIsDialogOpen(true)}>
           <Plus className="h-4 w-4 mr-2" />
           Add Task
         </Button>
       </div>
-      <TaskTable tasks={tasks} onDelete={deleteTask} onUpdate={updateTask} />
+      {tasks.length === 0 ? (
+        <p>No tasks found. Create one to get started!</p>
+      ) : (
+        <TaskTable tasks={tasks} onDelete={deleteTask} onUpdate={updateTask} />
+      )}
       <AddTaskDialog open={isDialogOpen} onOpenChange={setIsDialogOpen} onAdd={addTask} />
     </div>
   )
